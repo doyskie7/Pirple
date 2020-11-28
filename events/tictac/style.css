@@ -1,0 +1,16 @@
+.MarkX {
+    font-size: 100px;
+    color: red;
+    margin-top: auto;
+    margin-bottom: auto;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}   
+.MarkO {
+    font-size: 100px;
+    color: rgb(0, 0, 0);
+    margin-top: auto;
+    margin-bottom: auto;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

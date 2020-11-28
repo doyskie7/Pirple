@@ -1,0 +1,36 @@
+document.addEventListener("click",()=>{
+	
+})
+
+document.addEventListener("focus",()=>{
+
+})
+
+document.addEventListener("focusout",()=>{
+
+})
+
+document.addEventListener("click",EventFunc);
+
+
+function EventFunc (){
+	
+}
+
+document.removeEventListner("click",EventFunc)
+
+
+
+
+classList.add("")//adding classList
+
+classList.remove("")removing class
+
+
+
+
+
+
+
+
+
