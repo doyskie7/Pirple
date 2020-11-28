@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>To-do List</title>
+    </head>
+    <style>
+        body {
+
+            background-color: rgb(144, 22, 214);
+        }
+        .full-form {
+            margin:auto;
+            width: 20%;
+            padding: 110px;
+        }
+        .input-class{
+            padding: 10px;
+        }
+        .input-box{
+            padding: 10px;
+            border-radius: 5px;
+            width: 300px;
+        }
+        button{
+            padding: 10px;
+            border-radius: 5px;
+        }
+        label,h1 {
+            color: white;
+            font-family: sans-serif;
+        }
+        .intro-button{
+            width: 176px;
+        }
+        .display-none {
+            display: none;
+        }
+        .require {
+            border: 3px solid red ;
+        }
+        .required-all-fields{
+            color:white
+        }
+    </style>
+    <body>
+        <div class = "full-form">
+
+            <form id = "signin" class="display-none">
+                <div class="input-class">
+                    <h1>Sign Up</h1>
+                </div>
+                <div class="input-class">
+                    <input type = "text" placeholder="first name" class ="input-box"/>
+                </div>
+                <div class="input-class">
+                    <input type = "text" placeholder="last name"class ="input-box"/>
+                </div>
+                <div class="input-class">
+                    <input type = "text" placeholder="email"class ="input-box"/>
+                </div>
+                <div  class="input-class">
+                    <input type = "password" placeholder="password "class ="input-box"/>
+                </div>
+                <div  class="input-class required-all-fields display-none">
+                    <p>All fields are required</p>
+                </div>
+                <div class="input-class">
+                    <input type="checkbox" id="TermOfUse" name="TermOfUse">
+                    <label for="TermOfUse" >I agree to the Terms of Use</label>
+                </div>
+            </form>
+
+            <form id = "login" class="display-none">
+                <div class="input-class">
+                    <h1>Login In</h1>
+                </div>
+                <div class="input-class">
+                    <input type = "text" placeholder="email"class ="input-box"/>
+                </div>
+                <div  class="input-class">
+                    <input type = "password" placeholder="password "class ="input-box"/>
+                </div>
+                <div  class="input-class required-all-fields display-none">
+                    <p>All fields are required</p>
+                </div>
+                <div class="input-class">
+                    <input type="checkbox" id="TermOfUseLogin" name="TermOfUse">
+                    <label for="TermOfUseLogin">I agree to the Terms of Use</label>
+                </div>
+            </form>
+            
+            <div class="input-class form-button">
+                <button class="login-button display-none" id="LoginButton">Log In</button>
+                <button class="signin-button display-none" id="SignUpButton">Sign Up</button>
+                <button class="signin-button display-none" id="BackButton">Back</button>
+            </div>
+
+
+            <div class="input-class intro">
+                <h1>Application Form </h1>
+                <button class="intro-button">Sign Up</button>
+                <button class="intro-button">Log In</button>
+            </div>
+        </div>
+    </body>
+    <script>
+       
+            const Intro = document.querySelector('body > div > div.input-class.intro'); //intro
+            const SignIntro = document.querySelector('body > div > div.input-class.intro > button:nth-child(2)'); //signup button intro
+            const LogIntro = document.querySelector('body > div > div.input-class.intro > button:nth-child(3)'); //login button intro
+
+            const SingInForm = document.getElementById('signin'); //signin form
+            const LogInForm = document.getElementById('login'); //login form
+
+            const LoginButton = document.getElementById('LoginButton'); //buttons for login
+            const SignInButton = document.getElementById('SignUpButton'); //buttons for signin
+            const BackButton = document.getElementById('BackButton'); //buttons for back
+
+            SignIntro.addEventListener("click",()=>{
+                SingInForm.classList.remove('display-none')
+                SignInButton.classList.remove('display-none')
+                BackButton.classList.remove('display-none')
+                Intro.classList.add('display-none')
+                
+            })
+            LogIntro.addEventListener("click",()=>{
+                LogInForm.classList.remove('display-none')
+                LoginButton.classList.remove('display-none')
+                BackButton.classList.remove('display-none')
+                Intro.classList.add('display-none')
+            })
+            BackButton.addEventListener("click",()=>{
+                SingInForm.classList.add('display-none')
+                SignInButton.classList.add('display-none')
+                LogInForm.classList.add('display-none')
+                LoginButton.classList.add('display-none')
+                BackButton.classList.add('display-none')
+                Intro.classList.remove('display-none')
+            })
+            SignInButton.addEventListener("click",SignIn);
+            let FirstName = document.querySelector('#signin > div:nth-child(2) > input')
+            let LastName = document.querySelector('#signin > div:nth-child(3) > input')
+            let Email = document.querySelector('#signin > div:nth-child(4) > input')
+            let Password = document.querySelector('#signin > div:nth-child(5) > input')
+            let Terms = document.querySelector('#TermOfUse')
+            let TextLabel = document.querySelector('#signin > div.input-class.required-all-fields.display-none')
+
+            function SignIn(){
+                let Fields= [FirstName,LastName,Email,Password,Terms]
+                let check = 0
+                for(var i in Fields){
+                    if(Fields[i].value === ""){
+                        Fields[i].classList.add("require")
+                        TextLabel.classList.remove('display-none')
+                        check = 1;
+                    }
+                }
+                if(check === 0 ){
+                    TextLabel.classList.remove('display-none')
+                    if(Terms.checked  === true){
+                        TextLabel.innerHTML = "<p>Looks Good!</p>"
+                        SubmitSignIn()
+                    }else{
+                        TextLabel.innerHTML = "<p>Terms of Use is required</p>"
+                    }
+                }
+            }
+            FirstName.addEventListener("keyup",()=>{
+                FirstName.classList.remove("require")
+                RemoveRequireText()
+            })
+            LastName.addEventListener("keyup",()=>{
+                LastName.classList.remove("require")
+                RemoveRequireText()
+            })
+            Email.addEventListener("keyup",()=>{
+                Email.classList.remove("require")
+                RemoveRequireText()
+            })
+            Password.addEventListener("keyup",()=>{
+                Password.classList.remove("require")
+                RemoveRequireText()
+            })
+            function RemoveRequireText(){
+                let Fields= [FirstName,LastName,Email,Password,Terms]
+                var CheckField = false;
+                for(var i in Fields){
+                    if(Fields[i].value === ""){
+                        CheckField = true
+                    }
+                }
+                if(CheckField === false){
+                    if(Terms.checked  === false){
+                        TextLabel.innerHTML = "<p>Terms of Use is required</p>"
+                    }else{
+                        TextLabel.innerHTML = "<p>Looks Good!</p>"
+                    }
+                }else if (CheckField === true){
+                    TextLabel.innerHTML = "<p>All fields are required</p>"
+                }
+                console.log(CheckField)
+            }
+            function SubmitSignIn(){
+                let Data = [{
+                    "FirstName":FirstName.value,
+                    "LastName":LastName.value,
+                    "Email":Email.value,
+                    "Password":Password.value,
+                    "Terms":Terms.checked,
+                }]
+                console.log(Data)
+            }
+            
+            const EmailLoginField = document.querySelector('#login > div:nth-child(2) > input');
+            const PasswordLoginField = document.querySelector('#login > div:nth-child(3) > input');
+            const TermsLogin = document.querySelector('#TermOfUseLogin');
+            const RequireLabelLogin = document.querySelector('#login > div.input-class.required-all-fields.display-none');
+
+            LoginButton.addEventListener("click",()=>{
+                if(Validate() === true){
+
+                }
+            })
+
+            function Validate(){
+                
+                if(EmailLoginField.value === "" || PasswordLoginField.value === ""){
+                    if(EmailLoginField.value === ""){
+                        EmailLoginField.classList.add("require")
+                        RequireLabelLogin.classList.remove("display-none")
+                        RequireLabelLogin.innerHTML = "<p>All fields are required</p>"
+                    }
+                    if (PasswordLoginField.value === ""){
+                        PasswordLoginField.classList.add("require");
+                        RequireLabelLogin.classList.remove("display-none")
+                        RequireLabelLogin.innerHTML = "<p>All fields are required</p>"
+                    }
+                    return false
+                }else{
+                    if(TermsLogin.checked === true){
+                        
+                        RequireLabelLogin.classList.remove("display-none")
+                        RequireLabelLogin.innerHTML = "<p>Looks Good!</p>"
+                        return true
+                    }else{
+                        RequireLabelLogin.classList.remove("display-none")
+                        RequireLabelLogin.innerHTML = "<p>Terms of Use is required</p>"
+                        return false
+                    }
+                }
+            }
+
+            EmailLoginField.addEventListener("keyup",()=>{
+                EmailLoginField.classList.remove("require")
+                RequireLabelLogin.innerHTML = ""
+            })
+
+            PasswordLoginField.addEventListener("keyup",()=>{
+                PasswordLoginField.classList.remove("require")
+                RequireLabelLogin.innerHTML = ""
+            })
+
+            TermsLogin.addEventListener("click",()=>{
+                if(EmailLoginField.value === "" || PasswordLoginField.value === ""){
+                    Validate()
+                }else{
+                    RequireLabelLogin.innerHTML = "<p>Looks Good!</p>"
+                }
+            })
+    </script>
+</html>
