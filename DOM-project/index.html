@@ -6,7 +6,6 @@
     </head>
     <style>
         body {
-
             background-color: rgb(144, 22, 214);
         }
         .full-form {
@@ -41,6 +40,27 @@
         }
         .required-all-fields{
             color:white
+        }
+        .side-bar {
+            height: 100%;
+            width: 160px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: rgb(255, 255, 255);
+            padding-top: 100px;
+        }
+        .side-bar a {
+            padding: 15px 8px 6px 16px;
+            text-decoration: none;
+            font-size: 15px;
+            color: #818181;
+            display: block;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        a:hover{
+            color: black;
         }
     </style>
     <body>
@@ -102,6 +122,12 @@
                 <button class="intro-button">Sign Up</button>
                 <button class="intro-button">Log In</button>
             </div>
+
+            <div class="side-bar">
+                <a href=""> To-Do Lists</a>
+                <a href="">Account Settings</a>
+                <a href="">Log Out</a>
+            </div>
         </div>
     </body>
     <script>
@@ -137,6 +163,15 @@
                 LoginButton.classList.add('display-none')
                 BackButton.classList.add('display-none')
                 Intro.classList.remove('display-none')
+                FirstName.value = "";
+                LastName.value = "";
+                Email.value = "";
+                Password.value = "";
+                Terms.checked = false;    
+
+                EmailLoginField.value = "";
+                PasswordLoginField.value = "";
+                TermsLogin.checked = false
             })
             SignInButton.addEventListener("click",SignIn);
             let FirstName = document.querySelector('#signin > div:nth-child(2) > input')
@@ -145,6 +180,24 @@
             let Password = document.querySelector('#signin > div:nth-child(5) > input')
             let Terms = document.querySelector('#TermOfUse')
             let TextLabel = document.querySelector('#signin > div.input-class.required-all-fields.display-none')
+
+            FirstName.addEventListener("keyup",()=>{
+                FirstName.classList.remove("require")
+                RemoveRequireText()
+            })
+            LastName.addEventListener("keyup",()=>{
+                LastName.classList.remove("require")
+                RemoveRequireText()
+            })
+            Email.addEventListener("keyup",()=>{
+                Email.classList.remove("require")
+                RemoveRequireText()
+            })
+            Password.addEventListener("keyup",()=>{
+                Password.classList.remove("require")
+                RemoveRequireText()
+            })
+            
 
             function SignIn(){
                 let Fields= [FirstName,LastName,Email,Password,Terms]
@@ -166,22 +219,7 @@
                     }
                 }
             }
-            FirstName.addEventListener("keyup",()=>{
-                FirstName.classList.remove("require")
-                RemoveRequireText()
-            })
-            LastName.addEventListener("keyup",()=>{
-                LastName.classList.remove("require")
-                RemoveRequireText()
-            })
-            Email.addEventListener("keyup",()=>{
-                Email.classList.remove("require")
-                RemoveRequireText()
-            })
-            Password.addEventListener("keyup",()=>{
-                Password.classList.remove("require")
-                RemoveRequireText()
-            })
+           
             function RemoveRequireText(){
                 let Fields= [FirstName,LastName,Email,Password,Terms]
                 var CheckField = false;
@@ -201,15 +239,23 @@
                 }
                 console.log(CheckField)
             }
+
             function SubmitSignIn(){
-                let Data = [{
+                let Data = {
                     "FirstName":FirstName.value,
                     "LastName":LastName.value,
                     "Email":Email.value,
                     "Password":Password.value,
                     "Terms":Terms.checked,
-                }]
+                }
                 console.log(Data)
+
+                UserStorageToDoList = window.localStorage;
+                if(UserStorageToDoList.hasOwnProperty(Data.Email) === false){
+                    UserStorageToDoList.setItem(Data.Email,JSON.stringify(Data))
+                }else{
+                    TextLabel.innerHTML = "<p>Email address already exist!</p>"
+                }
             }
             
             const EmailLoginField = document.querySelector('#login > div:nth-child(2) > input');
@@ -217,14 +263,47 @@
             const TermsLogin = document.querySelector('#TermOfUseLogin');
             const RequireLabelLogin = document.querySelector('#login > div.input-class.required-all-fields.display-none');
 
-            LoginButton.addEventListener("click",()=>{
-                if(Validate() === true){
+         
+            EmailLoginField.addEventListener("keyup",()=>{
+                EmailLoginField.classList.remove("require")
+                RequireLabelLogin.innerHTML = ""
+            })
 
+            PasswordLoginField.addEventListener("keyup",()=>{
+                PasswordLoginField.classList.remove("require")
+                RequireLabelLogin.innerHTML = ""
+            })
+
+            TermsLogin.addEventListener("click",()=>{
+                if(EmailLoginField.value === "" || PasswordLoginField.value === ""){
+                    Validate()
                 }
             })
 
+            LoginButton.addEventListener("click",()=>{
+                if(Validate() === true){
+                    UserStorageToDoList = window.localStorage;
+                    console.log(UserStorageToDoList.hasOwnProperty(EmailLoginField.value));
+                    if(UserStorageToDoList.hasOwnProperty(EmailLoginField.value)){
+                        let getUser = UserStorageToDoList.getItem(EmailLoginField.value)
+                        let Data = JSON.parse(getUser)
+                        console.log(Data)
+                        console.log(Data.Password)
+                        console.log(PasswordLoginField.value)
+                        if(Data.Password === PasswordLoginField.value){
+
+                            RequireLabelLogin.innerHTML = "<p>Login Here!</p>"
+
+                        }else{
+                            RequireLabelLogin.innerHTML = "<p>Wrong Password!</p>"
+                        }
+                    }else{
+                        RequireLabelLogin.innerHTML = "<p>Cannot find email address!</p>"
+                    }
+                }
+            })
+               
             function Validate(){
-                
                 if(EmailLoginField.value === "" || PasswordLoginField.value === ""){
                     if(EmailLoginField.value === ""){
                         EmailLoginField.classList.add("require")
@@ -239,9 +318,8 @@
                     return false
                 }else{
                     if(TermsLogin.checked === true){
-                        
-                        RequireLabelLogin.classList.remove("display-none")
                         RequireLabelLogin.innerHTML = "<p>Looks Good!</p>"
+                        RequireLabelLogin.classList.remove("display-none")
                         return true
                     }else{
                         RequireLabelLogin.classList.remove("display-none")
@@ -251,22 +329,8 @@
                 }
             }
 
-            EmailLoginField.addEventListener("keyup",()=>{
-                EmailLoginField.classList.remove("require")
-                RequireLabelLogin.innerHTML = ""
-            })
 
-            PasswordLoginField.addEventListener("keyup",()=>{
-                PasswordLoginField.classList.remove("require")
-                RequireLabelLogin.innerHTML = ""
-            })
 
-            TermsLogin.addEventListener("click",()=>{
-                if(EmailLoginField.value === "" || PasswordLoginField.value === ""){
-                    Validate()
-                }else{
-                    RequireLabelLogin.innerHTML = "<p>Looks Good!</p>"
-                }
-            })
+
     </script>
 </html>
