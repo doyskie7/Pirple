@@ -41,6 +41,8 @@
         .required-all-fields{
             color:white
         }
+
+        /*dashboard*/
         .side-bar {
             height: 100%;
             width: 160px;
@@ -61,6 +63,9 @@
         }
         a:hover{
             color: black;
+        }
+        .list > li{
+            color: white;
         }
     </style>
     <body>
@@ -123,11 +128,35 @@
                 <button class="intro-button">Log In</button>
             </div>
 
-            <div class="side-bar">
-                <a href=""> To-Do Lists</a>
-                <a href="">Account Settings</a>
-                <a href="">Log Out</a>
+        
+            <div id="dashoard" class="display-none">
+
+                <div id="no-list" class = "input-class">
+                    <h1>You have no to-do List</h1>
+                    <button>Create New to-do List button</button>
+                </div>
+    
+                <div id="create-list" class="input-class">
+                    <input type="text" placeholder="Title" class="input-box">
+
+                    <ul class="list" hidden>
+                        <li>
+                            Sample
+                        </li>
+                    </ul>
+                    
+                    <input type="text" placeholder="List" class="input-box">
+                    <button class="b">Submit</button>
+                </div>
+
+                <!--SIDE BAR-->
+                <div class="side-bar">
+                    <a href=""> To-Do Lists</a>
+                    <a href="">Account Settings</a>
+                    <a href="">Log Out</a>
+                </div>
             </div>
+
         </div>
     </body>
     <script>
@@ -142,6 +171,9 @@
             const LoginButton = document.getElementById('LoginButton'); //buttons for login
             const SignInButton = document.getElementById('SignUpButton'); //buttons for signin
             const BackButton = document.getElementById('BackButton'); //buttons for back
+
+
+            const dashboard = document.getElementById("dashboard");
 
             SignIntro.addEventListener("click",()=>{
                 SingInForm.classList.remove('display-none')
