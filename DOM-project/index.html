@@ -71,6 +71,8 @@
     <body>
         <div class = "full-form">
 
+            
+
             <form id = "signin" class="display-none">
                 <div class="input-class">
                     <h1>Sign Up</h1>
@@ -129,7 +131,7 @@
             </div>
 
         
-            <div id="dashoard" class="display-none">
+            <div id="dashboardID" class="display-none">
 
                 <div id="no-list" class = "input-class">
                     <h1>You have no to-do List</h1>
@@ -173,7 +175,7 @@
             const BackButton = document.getElementById('BackButton'); //buttons for back
 
 
-            const dashboard = document.getElementById("dashboard");
+            const dashboard = document.getElementById("dashboardID");
 
             SignIntro.addEventListener("click",()=>{
                 SingInForm.classList.remove('display-none')
@@ -244,8 +246,8 @@
                 if(check === 0 ){
                     TextLabel.classList.remove('display-none')
                     if(Terms.checked  === true){
-                        TextLabel.innerHTML = "<p>Looks Good!</p>"
-                        SubmitSignIn()
+                        TextLabel.innerHTML = "<p>Looks Goodssss!</p>"
+                        console.log(SubmitSignIn())
                     }else{
                         TextLabel.innerHTML = "<p>Terms of Use is required</p>"
                     }
@@ -282,9 +284,13 @@
                 }
                 console.log(Data)
 
-                UserStorageToDoList = window.localStorage;
+                let UserStorageToDoList = window.localStorage;
                 if(UserStorageToDoList.hasOwnProperty(Data.Email) === false){
                     UserStorageToDoList.setItem(Data.Email,JSON.stringify(Data))
+                    let Session = window.sessionStorage;
+                    Session.setItem("user",Data.Email);
+                    SessionUser(Data.Email);
+                    return true;
                 }else{
                     TextLabel.innerHTML = "<p>Email address already exist!</p>"
                 }
@@ -314,7 +320,7 @@
 
             LoginButton.addEventListener("click",()=>{
                 if(Validate() === true){
-                    UserStorageToDoList = window.localStorage;
+                    let UserStorageToDoList = window.localStorage;
                     console.log(UserStorageToDoList.hasOwnProperty(EmailLoginField.value));
                     if(UserStorageToDoList.hasOwnProperty(EmailLoginField.value)){
                         let getUser = UserStorageToDoList.getItem(EmailLoginField.value)
@@ -325,6 +331,9 @@
                         if(Data.Password === PasswordLoginField.value){
 
                             RequireLabelLogin.innerHTML = "<p>Login Here!</p>"
+                            let Session = window.sessionStorage;
+                            Session.setItem("user",Data.Email);
+                            SessionUser(Data.Email);
 
                         }else{
                             RequireLabelLogin.innerHTML = "<p>Wrong Password!</p>"
@@ -362,7 +371,26 @@
             }
 
 
+            function SessionUser(UserEmail){
+                let Session = window.sessionStorage;
+                if(Session.hasOwnProperty("user")){
+                    LogInForm.classList.add("display-none")
+                    SingInForm.classList.add("display-none")
+                    Intro.classList.add("display-none");
+                    dashboard.classList.remove("display-none");
+                    LoginButton.classList.add("display-none");
+                    SignInButton.classList.add("display-none");
+                    BackButton.classList.add("display-none");
+                }
+            }
+            SessionUser();
+            const LogOut = document.querySelector("#dashboardID > div.side-bar > a:nth-child(3)");
+            LogOut.addEventListener("click",()=>{
+                let Session = window.sessionStorage;
+                Session.removeItem("user");
+            })
 
-
+            const getCreateList = document.getElementById("create-list");
+            
     </script>
 </html>
