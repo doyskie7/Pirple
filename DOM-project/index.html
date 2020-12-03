@@ -25,7 +25,7 @@
             padding: 10px;
             border-radius: 5px;
         }
-        label,h1 {
+        label,h1,h3 {
             color: white;
             font-family: sans-serif;
         }
@@ -139,16 +139,14 @@
                 </div>
     
                 <div id="create-list" class="input-class">
-                    <input type="text" placeholder="Title" class="input-box">
-
-                    <ul class="list" hidden>
-                        <li>
-                            Sample
-                        </li>
+                    <input type="text" placeholder="Title" class="input-box" maxlength="40">
+                    <h3></h3>
+                    <ul class="list">
+                        
                     </ul>
                     
                     <input type="text" placeholder="List" class="input-box">
-                    <button class="b">Submit</button>
+                    <button id="add">Add Title</button><button id="submit-todolist">Submit</button> 
                 </div>
 
                 <!--SIDE BAR-->
@@ -174,8 +172,10 @@
             const SignInButton = document.getElementById('SignUpButton'); //buttons for signin
             const BackButton = document.getElementById('BackButton'); //buttons for back
 
-
             const dashboard = document.getElementById("dashboardID");
+
+            let localDB = window.localStorage;
+            let sessionDB = window.sessionStorage;
 
             SignIntro.addEventListener("click",()=>{
                 SingInForm.classList.remove('display-none')
@@ -281,14 +281,12 @@
                     "Email":Email.value,
                     "Password":Password.value,
                     "Terms":Terms.checked,
+                    "TodoList": []
                 }
                 console.log(Data)
-
-                let UserStorageToDoList = window.localStorage;
-                if(UserStorageToDoList.hasOwnProperty(Data.Email) === false){
-                    UserStorageToDoList.setItem(Data.Email,JSON.stringify(Data))
-                    let Session = window.sessionStorage;
-                    Session.setItem("user",Data.Email);
+                if(localDB.hasOwnProperty(Data.Email) === false){
+                    localDB.setItem(Data.Email,JSON.stringify(Data))
+                    sessionDB.setItem("user",Data.Email);
                     SessionUser(Data.Email);
                     return true;
                 }else{
@@ -320,10 +318,9 @@
 
             LoginButton.addEventListener("click",()=>{
                 if(Validate() === true){
-                    let UserStorageToDoList = window.localStorage;
-                    console.log(UserStorageToDoList.hasOwnProperty(EmailLoginField.value));
-                    if(UserStorageToDoList.hasOwnProperty(EmailLoginField.value)){
-                        let getUser = UserStorageToDoList.getItem(EmailLoginField.value)
+                    console.log(localDB.hasOwnProperty(EmailLoginField.value));
+                    if(localDB.hasOwnProperty(EmailLoginField.value)){
+                        let getUser = localDB.getItem(EmailLoginField.value)
                         let Data = JSON.parse(getUser)
                         console.log(Data)
                         console.log(Data.Password)
@@ -331,8 +328,7 @@
                         if(Data.Password === PasswordLoginField.value){
 
                             RequireLabelLogin.innerHTML = "<p>Login Here!</p>"
-                            let Session = window.sessionStorage;
-                            Session.setItem("user",Data.Email);
+                            sessionDB.setItem("user",Data.Email);
                             SessionUser(Data.Email);
 
                         }else{
@@ -372,8 +368,7 @@
 
 
             function SessionUser(UserEmail){
-                let Session = window.sessionStorage;
-                if(Session.hasOwnProperty("user")){
+                if(sessionDB.hasOwnProperty("user")){
                     LogInForm.classList.add("display-none")
                     SingInForm.classList.add("display-none")
                     Intro.classList.add("display-none");
@@ -386,11 +381,68 @@
             SessionUser();
             const LogOut = document.querySelector("#dashboardID > div.side-bar > a:nth-child(3)");
             LogOut.addEventListener("click",()=>{
-                let Session = window.sessionStorage;
-                Session.removeItem("user");
+                sessionDB.removeItem("user");
             })
 
-            const getCreateList = document.getElementById("create-list");
+            const getCreateList = document.getElementById("create-list");   
+
+            let GetUserSession = sessionDB.getItem("user")
+            console.log(GetUserSession)
+
+            let GetSessionData = localDB.getItem(GetUserSession);
+            let LogedInUser = JSON.parse(GetSessionData)
+
+            if(LogedInUser.TodoList.length === 0){
+                getCreateList.classList.add("display-none")
+            }
+            const CreateTodoListBtn = document.querySelector("#no-list > button");
+            const NoList = document.querySelector("#no-list");
             
+            const ListTitleInput = document.querySelector("#create-list > input:nth-child(1)");
+            const ListInput = document.querySelector("#create-list > input:nth-child(4)");
+            const AddList  = document.querySelector("#add");
+            const SubmitListBTN = document.querySelector("#submit-todolist");
+            const UL = document.querySelector("#create-list > ul");
+            const TitleList = document.querySelector("#create-list > h3");
+            
+            CreateTodoListBtn.addEventListener("click",CreateTodoListForm)
+
+            function CreateTodoListForm() {
+                NoList.classList.add("display-none")
+                getCreateList.classList.remove("display-none");
+                ListInput.classList.add("display-none");
+                SubmitListBTN.classList.add("display-none");
+            }
+
+            ListTitleInput.addEventListener("keyup",()=>{
+                TitleList.innerText = ListTitleInput.value
+                
+            })
+            AddList.addEventListener("click",ListAdd);
+
+            function ListAdd () {
+                if(TitleList.innerText === ""){
+                    
+                    ListTitleInput.classList.add("require");
+                }else{
+                    AddList.innerText="Add List"
+                    ListTitleInput.classList.add("display-none");
+                    ListInput.classList.remove("display-none");
+                    SubmitListBTN.classList.remove("display-none");
+
+                    if(ListInput.value === ""){
+                        console.log("List input cannot be empty");
+
+                    }else{
+                        console.log(document.getElementsByTagName("li").length)
+                        var createLI = document.createElement("li");
+                        createLI.innerText = ListInput.value;
+                        UL.appendChild(createLI)
+                        ListInput.value=""
+                    }
+
+                }
+            }
+
     </script>
 </html>
