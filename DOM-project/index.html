@@ -25,7 +25,7 @@
             padding: 10px;
             border-radius: 5px;
         }
-        label,h1,h3 {
+        label,h1,h3,h5 {
             color: white;
             font-family: sans-serif;
         }
@@ -141,6 +141,7 @@
                 <div id="create-list" class="input-class">
                     <input type="text" placeholder="Title" class="input-box" maxlength="40">
                     <h3></h3>
+                    <h5></h5>
                     <ul class="list">
                         
                     </ul>
@@ -156,7 +157,7 @@
                     <a href="">Log Out</a>
                 </div>
             </div>
-
+            <h5></h5>
         </div>
     </body>
     <script>
@@ -392,18 +393,24 @@
             let GetSessionData = localDB.getItem(GetUserSession);
             let LogedInUser = JSON.parse(GetSessionData)
 
+            //CHECK IF LIST IS EMPTY 
+            /**--------------------------------------------------------**/
             if(LogedInUser.TodoList.length === 0){
                 getCreateList.classList.add("display-none")
             }
+            /**--------------------------------------------------------**/
+
             const CreateTodoListBtn = document.querySelector("#no-list > button");
             const NoList = document.querySelector("#no-list");
             
             const ListTitleInput = document.querySelector("#create-list > input:nth-child(1)");
-            const ListInput = document.querySelector("#create-list > input:nth-child(4)");
+            const ListInput = document.querySelector("#create-list > input:nth-child(5)");
             const AddList  = document.querySelector("#add");
             const SubmitListBTN = document.querySelector("#submit-todolist");
             const UL = document.querySelector("#create-list > ul");
             const TitleList = document.querySelector("#create-list > h3");
+            const ListLimit = document.querySelector("body > div > h5");
+            const NewListData = [];
             
             CreateTodoListBtn.addEventListener("click",CreateTodoListForm)
 
@@ -418,9 +425,11 @@
                 TitleList.innerText = ListTitleInput.value
                 
             })
+
             AddList.addEventListener("click",ListAdd);
 
-            function ListAdd () {
+            
+            function ListAdd () { 
                 if(TitleList.innerText === ""){
                     
                     ListTitleInput.classList.add("require");
@@ -429,19 +438,52 @@
                     ListTitleInput.classList.add("display-none");
                     ListInput.classList.remove("display-none");
                     SubmitListBTN.classList.remove("display-none");
-
+                    ListLimit.innerText = ""
                     if(ListInput.value === ""){
-                        console.log("List input cannot be empty");
-
+                        if(UL.childElementCount !== 0 ) ListLimit.innerText = "Cannot add empty list" 
                     }else{
-                        console.log(document.getElementsByTagName("li").length)
-                        var createLI = document.createElement("li");
-                        createLI.innerText = ListInput.value;
-                        UL.appendChild(createLI)
-                        ListInput.value=""
-                    }
+                        if(document.getElementsByTagName("li").length !== 10 ){
+                            
+                            var createLI = document.createElement("li");
+                            createLI.innerText = ListInput.value;
+                            NewListData.push(createLI.innerText)
+                            UL.appendChild(createLI)
+                            ListInput.value=""
+                            ListTitleInput.value === "";
 
+                            if(CheckIfExist(NewListData,TitleList.innerText)){
+                                console.log("title already added");
+                            }else{
+                                NewListData.unshift(TitleList.innerText);
+                            }
+
+                        }else{
+                            ListLimit.innerText = "The limit is 10 List"
+                            ListInput.value=""
+                            ListTitleInput.value === "";
+                        }
+                    }
                 }
+            }
+            function CheckIfExist(data,title) {
+                for(let i in data){
+                    if(data[i] === title){
+                        return true
+                    }
+                }
+                return false;
+            }
+
+            SubmitListBTN.addEventListener("click",SubmitList)
+            function SubmitList(){
+                if(UL.childElementCount !== 0 ){
+                    ListLimit.innerText = ""
+                    console.log(NewListData);
+                    LogedInUser.TodoList.push(NewListData);
+                }else{
+                    ListLimit.innerText = "Cannot submit empty List"
+                }
+                
             }
 
     </script>
