@@ -154,7 +154,12 @@
                         
                     </ul>
                     <input type="text" placeholder="List" class="input-box">
-                    <button id="add">Add Title</button><button id="submit-todolist">Submit</button> 
+                    <input type="text" placeholder="List" class="input-box">
+                    <button id="addTitleOrList">Add Title</button>
+                    <button id="submit-todolist">Submit</button> 
+                    
+                    <button id="update-add-todolist">Add List Update</button> 
+                    <button id="update-submit-todolist">Submit Update</button> 
                 </div>
 
                 <div id="todo-list">
@@ -162,7 +167,22 @@
                         <ol id="all-list">
                             
                         </ol>
-                    <button id ="add-more"> Add More List</button>
+                        <button id ="add-more"> Add </button>
+                        <button id ="update-list"> Update</button>
+                        <button id ="view-list"> View</button>
+                        <button id ="delete-list"> Delete</button>
+
+                        <input type="text" id = "TitleToUpdate"class="input-box display-none" placeholder="Enter Title to Edit">
+                        <button id ="Proceed-update" class="display-none" > Proceed</button>
+
+                        
+                        <input type="text" id = "TitleToView"class="input-box display-none" placeholder="Enter Title to View">
+                        <button id ="Proceed-view" class="display-none" > Proceed</button>
+
+                        
+                        <input type="text" id = "TitleToDelete"class="input-box display-none" placeholder="Enter Title to Delete">
+                        <button id ="Proceed-delete" class="display-none" > Proceed</button>
+
                 </div>
 
                 <form id = "Account-Settings" class="">
@@ -185,6 +205,13 @@
                         <button id ="update-btn"> Update Account</button>
                     </div>
                 </form>
+
+                <div id="view">
+                    <h3></h3>
+                    <ul id="view-now">
+                      
+                    </ul>
+                </div>
 
 
                 <!--SIDE BAR-->
@@ -437,7 +464,6 @@
             let LogedInUser = JSON.parse(GetSessionData)
 
 
-
             const LogOut = document.querySelector("#dashboardID > div.side-bar > a:nth-child(3)");
             LogOut.addEventListener("click",()=>{
                 sessionDB.removeItem("user");
@@ -448,7 +474,7 @@
             
             const ListTitleInput = document.querySelector("#create-list > input:nth-child(1)");
             const ListInput = document.querySelector("#create-list > input:nth-child(5)");
-            const AddList  = document.querySelector("#add");
+            const AddList  = document.querySelector("#addTitleOrList");
             const SubmitListBTN = document.querySelector("#submit-todolist");
             const UL = document.querySelector("#create-list > ul");
             const TitleList = document.querySelector("#create-list > h3");
@@ -462,10 +488,21 @@
                 getCreateList.classList.remove("display-none");
                 ListInput.classList.add("display-none");
                 SubmitListBTN.classList.add("display-none");
+                ListInputUpdate.classList.add("display-none")
+                getaddUpdate.classList.add("display-none");
+                getBtnUpdateSubmit.classList.add("display-none");
             }
 
             ListTitleInput.addEventListener("keyup",()=>{
                 TitleList.innerText = ListTitleInput.value
+                if(CheckIfExist(NewListData,TitleList.innerText)){
+                    console.log("title already added");
+                    ListLimit.innerText = "title already added" 
+                    AddList.classList.add("display-none");
+                }else{
+                    ListLimit.innerText = "" 
+                    AddList.classList.remove("display-none");
+                }
                 
             })
 
@@ -473,7 +510,7 @@
 
             
             function ListAdd () { 
-                if(TitleList.innerText === ""){
+                if(TitleList.innerText === ""){ //dito
                     
                     ListTitleInput.classList.add("require");
                 }else{
@@ -482,41 +519,34 @@
                     ListInput.classList.remove("display-none");
                     SubmitListBTN.classList.remove("display-none");
                     ListLimit.innerText = ""
+
                     if(ListInput.value === ""){
                         if(UL.childElementCount !== 0 ) ListLimit.innerText = "Cannot add empty list" 
                     }else{
-                        if(NewListData.length !== 11 ){
-                            
+
+                        if(CheckIfExist(NewListData,TitleList.innerText)){
+                            ListLimit.innerText = "title already added" 
+                        }else{
                             var createLI = document.createElement("li");
                             createLI.innerText = ListInput.value;
                             NewListData.push(createLI.innerText)
                             UL.appendChild(createLI)
                             ListInput.value=""
                             ListTitleInput.value === "";
-
-                            if(CheckIfExist(NewListData,TitleList.innerText)){
-                                console.log("title already added");
-                            }else{
-                                NewListData.unshift(TitleList.innerText);
-                            }
-
-                        }else{
-                            ListLimit.innerText = "The limit is 10 List"
-                            ListInput.value=""
-                            ListTitleInput.value === "";
                         }
+                        console.log(NewListData)
+
                     }
                 }
+                
             }
-            function CheckIfExist(data,title) {
-                let CheckTitle = localDB.getItem(GetUserSession) // line 443 Referrence
-                for(let i in data){
-                    for(let x in CheckTitle.TodoList[x]){
-                        for(let y in CheckTitle.TodoList[x][y]){
-                            if(CheckTitle.TodoList[x][y].includes((data[i]))){
-                                return true
-                            }
-                        }
+            function CheckIfExist(NewListData,title) {
+                var CheckTitle = localDB.getItem(GetUserSession) // line 443 Referrence
+                var data = JSON.parse(CheckTitle)
+
+                for(var i in data.TodoList){
+                    if(data.TodoList[i][0].title === ListTitleInput.value){
+                        return true
                     }
                 }
                 return false;
@@ -527,7 +557,8 @@
             function SubmitList(){
                 if(UL.childElementCount !== 0 ){
                     ListLimit.innerText = ""
-                    console.log(NewListData);
+                    console.log("shet",NewListData);
+                    NewListData.unshift({title:ListTitleInput.value})
                     LogedInUser.TodoList.push(NewListData);
                     localDB.setItem(GetUserSession,JSON.stringify(LogedInUser))
                     location.reload();
@@ -549,7 +580,7 @@
          
 
            
-            //LIST CODES
+            //LIST CODES 
             /**--------------------------------------------------------**/
             function ViewList(){
                 console.log(LogedInUser.TodoList);
@@ -559,14 +590,301 @@
                 let AllList = document.getElementById("all-list");
                 listCounts.innerText = `These are your title for your list`  
                 for(var i in LogedInUser.TodoList){
-                    AllList.appendChild(CreateElementLI(LogedInUser.TodoList[i][0]))
+                    AllList.appendChild(CreateElementLI(LogedInUser.TodoList[i][0].title))
                 }
             }
             function CreateElementLI (text){
+                
+                var btn = document.createElement("button")
+                btn.textContent = text
+
                 var li = document.createElement("li")
-                li.textContent = text
+                li.textContent = text 
+                
                 return li
             }
+            
+            //------UPDATE LIST CODE START COMMENT------///
+            let UpdateListBtn = document.getElementById("update-list");
+            let inputUpdate = document.getElementById("TitleToUpdate")
+            let submitUpdate = document.getElementById("Proceed-update")
+            
+            UpdateListBtn.addEventListener("click",()=>{
+                inputUpdate.classList.remove("display-none");
+            })
+
+            inputUpdate.addEventListener("keyup",()=>{
+                var CheckTitle = localDB.getItem(GetUserSession) // line 443 Referrence
+                var data = JSON.parse(CheckTitle)
+
+                var titleID = []
+                for(var i in data.TodoList){
+                    titleID.push(data.TodoList[i][0].title)
+                    if(titleID.includes(inputUpdate.value)){
+                        submitUpdate.classList.remove("display-none");
+                    }else{
+                        submitUpdate.classList.add("display-none");
+                    }
+                }
+            })
+            let getBtnUpdateSubmit = document.getElementById("update-submit-todolist");
+            let getaddUpdate = document.getElementById("update-add-todolist");
+            
+            const ListInputUpdate = document.querySelector("#create-list > input:nth-child(6)");
+            submitUpdate.addEventListener("click",()=>{
+                ViewListForm.classList.add("display-none");
+
+                NoList.classList.add("display-none")
+                getCreateList.classList.remove("display-none");
+                ListInput.classList.add("display-none");
+                ListTitleInput.classList.add("display-none");
+                AddList.classList.add("display-none");
+                SubmitListBTN.classList.add("display-none");
+
+                ListInputUpdate.classList.remove("display-none");
+                getaddUpdate.classList.remove("display-none");
+                getBtnUpdateSubmit.classList.remove("display-none");
+                TitleList.innerText = inputUpdate.value
+            })
+            let updateData = []
+
+            getaddUpdate.addEventListener("click",()=>{
+                var createLI = document.createElement("li");
+                createLI.innerText = ListInputUpdate.value;
+                updateData.push(createLI.innerText)
+                UL.appendChild(createLI)
+                ListInputUpdate.value= "";
+            })
+
+            getBtnUpdateSubmit.addEventListener("click",()=>{
+                console.log(TitleList.innerText)
+                console.log(updateData)
+                for(var i in LogedInUser.TodoList){
+                    if(LogedInUser.TodoList[i][0].title === TitleList.innerText){
+                        updateData.unshift({title:TitleList.innerText})
+                        console.log(updateData);
+                        LogedInUser.TodoList[i] = []
+                        LogedInUser.TodoList[i] = updateData
+                        console.log("new data =>",LogedInUser.TodoList[i])
+                        console.log("should be match with =>",updateData);
+                        localDB.setItem(GetUserSession,JSON.stringify(LogedInUser))
+                        location.reload()
+                    }
+                }
+            })
+            console.log(updateData)
+            //------UPDATE LIST CODE END COMMENT------///
+            
+            //---------VIEW LIST START-----------//
+
+            let getViewButton = document.getElementById("view-list")
+            let inputToView = document.getElementById("TitleToView");
+            let getProceedView = document.getElementById("Proceed-view");
+
+            let viewForm = document.getElementById("view");
+            let viewFormList = document.getElementById("view-now")
+            let getTitleAppend = document.querySelector("#view > h3");
+
+
+            getViewButton.addEventListener("click",()=>{
+
+                inputToView.classList.remove("display-none");
+
+            })
+            var Title_Match;
+            inputToView.addEventListener("keyup",()=>{
+                var CheckTitle = localDB.getItem(GetUserSession) // line 443 Referrence
+                var data = JSON.parse(CheckTitle)
+                var titleID = []
+                for(var i in data.TodoList){
+                    titleID.push(data.TodoList[i][0].title)
+                    if(titleID.includes(inputToView.value)){
+                        Title_Match = inputToView.value
+                        getProceedView.classList.remove("display-none");
+                    }else{
+                        getProceedView.classList.add("display-none");
+                        viewFormList.innerHTML = "";
+                        getTitleAppend.innerText= "";
+                    }
+                }
+            })
+
+            getProceedView.addEventListener("click",()=>{
+                viewForm.classList.remove("display-none")
+                viewFormList.classList.remove("display-none")
+                getTitleAppend.innerText = Title_Match
+
+                var CheckTitle = localDB.getItem(GetUserSession) //line 443 Referrence
+                var data = JSON.parse(CheckTitle)
+                viewFormList.innerHTML = "";
+                for(var i in data.TodoList){
+                    if(Title_Match === data.TodoList[i][0].title){
+                        for(var x = 1; x < data.TodoList[i].length; x++){
+                            viewFormList.appendChild(CreateElementLI(data.TodoList[i][x]))
+                        }
+                    }
+                }
+            })
+
+            //---------VIEW LIST END-----------//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //----------DELETE LIST START-------//
+
+            let getDeleteBtn = document.getElementById("delete-list")
+            let getInputToDelete = document.getElementById("TitleToDelete")
+            let getProceedDelete = document.getElementById("Proceed-delete");
+
+            getDeleteBtn.addEventListener("click",()=>{
+                getInputToDelete.classList.remove("display-none");
+            });
+            
+            getInputToDelete.addEventListener("keyup",()=>{
+                var CheckTitle = localDB.getItem(GetUserSession) // line 443 Referrence
+                var data = JSON.parse(CheckTitle)
+
+                var titleID = []
+                for(var i in data.TodoList){
+                    titleID.push(data.TodoList[i][0].title)
+                    if(titleID.includes(getInputToDelete.value)){
+                        getProceedDelete.classList.remove("display-none");
+                    }else{
+                        getProceedDelete.classList.add("display-none");
+                    }
+                }
+            })
+
+            getProceedDelete.addEventListener("click",()=>{
+                var CheckTitle = localDB.getItem(GetUserSession)
+                var data = JSON.parse(CheckTitle);
+
+                for(var x in data.TodoList){
+                    if(getInputToDelete.value === data.TodoList[x][0].title){
+                        console.log(data.TodoList[x][0].title)
+                        data.TodoList.pop(data.TodoList[x])
+                    }
+                }
+                console.log(data.TodoList);
+                localDB.setItem(GetUserSession,JSON.stringify(data))
+                location.reload();
+            })
+
+
+            //----------DELETE LIST END-------//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             let AddMoreList = document.getElementById("add-more");
             var EditAccountForm = document.getElementById("Account-Settings");
@@ -600,9 +918,11 @@
                 TodoListLink.addEventListener("click",ToDoPage)   
 
                 function ToDoPage () {
+                    //doyskie
                     EditAccountForm.classList.add("display-none");
                     ViewListForm.classList.remove("display-none")
-                    NoList.classList.add("display-none")
+                    getCreateList.classList.add("display-none")
+                    location.reload();
                 }
 
                 var UpdateFirstName = document.querySelector("#Account-Settings > div:nth-child(1) > input");
@@ -622,6 +942,7 @@
                     EditAccountForm.classList.remove("display-none");
                     ViewListForm.classList.add("display-none")
                     NoList.classList.add("display-none")
+                    getCreateList.classList.add("display-none")
                 }
 
                 var UpdateBTN = document.getElementById("update-btn");
