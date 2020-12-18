@@ -604,13 +604,81 @@
                 return li
             }
             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //------UPDATE LIST CODE START COMMENT------///
             let UpdateListBtn = document.getElementById("update-list");
             let inputUpdate = document.getElementById("TitleToUpdate")
             let submitUpdate = document.getElementById("Proceed-update")
             
             UpdateListBtn.addEventListener("click",()=>{
+
                 inputUpdate.classList.remove("display-none");
+                submitUpdate.classList.add("display-none");
+                inputUpdate.value = "";
+
+                //getViewButton.classList.add("display-none");
+                inputToView.classList.add("display-none");
+                getProceedView.classList.add("display-none");
+
+                //getDeleteBtn.classList.add("display-none");
+                getInputToDelete.classList.add("display-none");
+                getProceedDelete.classList.add("display-none");
             })
 
             inputUpdate.addEventListener("keyup",()=>{
@@ -675,6 +743,56 @@
             console.log(updateData)
             //------UPDATE LIST CODE END COMMENT------///
             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
             //---------VIEW LIST START-----------//
 
             let getViewButton = document.getElementById("view-list")
@@ -689,7 +807,20 @@
             getViewButton.addEventListener("click",()=>{
 
                 inputToView.classList.remove("display-none");
+                getProceedView.classList.add("display-none");
+                inputToView.value = "";
 
+                //UpdateListBtn.classList.add("display-none");
+                inputUpdate.classList.add("display-none");
+                submitUpdate.classList.add("display-none");
+
+
+                //getDeleteBtn.classList.add("display-none");
+                getInputToDelete.classList.add("display-none");
+                getProceedDelete.classList.add("display-none");
+                
+                viewForm.classList.add("display-none");
+                
             })
             var Title_Match;
             inputToView.addEventListener("keyup",()=>{
@@ -778,6 +909,7 @@
 
 
 
+
             //----------DELETE LIST START-------//
 
             let getDeleteBtn = document.getElementById("delete-list")
@@ -785,7 +917,23 @@
             let getProceedDelete = document.getElementById("Proceed-delete");
 
             getDeleteBtn.addEventListener("click",()=>{
+
+
                 getInputToDelete.classList.remove("display-none");
+                getProceedDelete.classList.add("display-none");
+                getInputToDelete.value = "";
+                
+                //getViewButton.classList.add("display-none");
+                inputToView.classList.add("display-none");
+                getProceedView.classList.add("display-none");
+
+                
+                //UpdateListBtn.classList.add("display-none");
+                inputUpdate.classList.add("display-none");
+                submitUpdate.classList.add("display-none");
+
+                viewForm.classList.add("display-none");
+                
             });
             
             getInputToDelete.addEventListener("keyup",()=>{
@@ -807,13 +955,18 @@
                 var CheckTitle = localDB.getItem(GetUserSession)
                 var data = JSON.parse(CheckTitle);
 
+                var newData = []
                 for(var x in data.TodoList){
                     if(getInputToDelete.value === data.TodoList[x][0].title){
                         console.log(data.TodoList[x][0].title)
-                        data.TodoList.pop(data.TodoList[x])
+                        console.log(data.TodoList[x])
+                    }else{
+                        newData.push(data.TodoList[x])
                     }
                 }
-                console.log(data.TodoList);
+                data.TodoList = newData
+                console.log(newData)
+                console.log(data)
                 localDB.setItem(GetUserSession,JSON.stringify(data))
                 location.reload();
             })
